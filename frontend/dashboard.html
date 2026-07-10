@@ -109,6 +109,7 @@
   <div class="tabbar">
     <button type="button" class="tab-btn active" data-tab="tabPanelDashboard">Dashboard</button>
     <button type="button" class="tab-btn" data-tab="tabPanelPrediction">Prediction</button>
+    <button type="button" class="tab-btn" data-tab="tabPanelConcept">Concept</button>
   </div>
 
   <div id="tabPanelDashboard" class="tab-panel active">
@@ -274,6 +275,105 @@
   </div>
 
   </div><!-- /tabPanelPrediction -->
+
+  <div id="tabPanelConcept" class="tab-panel">
+
+  <div class="callout">
+    <h2>&#128161; What this tool actually does, in plain English</h2>
+    <p>The second someone signs up for IRA — before they've sent even one message — we take a guess at three things: will they ever pay us, how long will they stick around, and how much money will they bring in. Everything on this tab explains how we make that guess, in plain words, and which "model" (a trained guessing formula) we leaned on for each part, and why.</p>
+  </div>
+
+  <div class="section">
+    <h2>The one rule that shapes the whole thing</h2>
+    <p style="font-size:13px;">We're only allowed to use information that exists <b>before</b> a person's first message. Nothing that happens after. Think of a bank deciding your credit limit the moment you walk in the door — before you've done a single transaction with them. That one constraint is why the system needed two models instead of one.</p>
+  </div>
+
+  <div class="section">
+    <h2>Two moments in a user's life, two models</h2>
+    <p style="font-size:13px; margin-bottom:14px;">Some users give us nothing to go on except how they signed up (which ad, which phone, what time of day). Others browse around a bit before messaging — and that browsing turns out to say a lot about them. So we built two models, not one:</p>
+    <div class="dd-grid">
+      <div style="background:#F7F7F5; border-radius:8px; padding:12px 14px;">
+        <p class="dd-title">Model 1 — "T0", the instant they sign up</p>
+        <p style="font-size:13px;">Uses only what we know the second someone signs up (channel, phone type, time of day). Works for <b>every single user</b>, no exceptions. Think of it as a first impression.</p>
+      </div>
+      <div style="background:#F7F7F5; border-radius:8px; padding:12px 14px;">
+        <p class="dd-title">Model 2 — "T0+", after a bit of browsing</p>
+        <p style="font-size:13px;">Uses anything that happened between signup and their first message — how long they browsed, how many times they opened the app. Sharper, but only exists once a user actually does something.</p>
+      </div>
+    </div>
+    <p class="note" style="margin-top:12px;">Turns out that first-impression-only model barely beats a coin flip on its own. The real predictive power shows up the moment we add browsing behavior — one number in particular, "minutes between signup and first message," ends up doing almost all of the heavy lifting everywhere in this system. You'll see it come up again and again below.</p>
+  </div>
+
+  <div class="section">
+    <h2>Quick reference — every model used, and why</h2>
+    <p style="font-size:13px; margin-bottom:12px;">If you remember nothing else from this page, remember this table.</p>
+    <table class="mini">
+      <thead><tr><th>Question we're answering</th><th>Model we used</th><th>Why, in one line</th></tr></thead>
+      <tbody>
+        <tr><td>Will they ever pay? (first check)</td><td>Logistic Regression</td><td>Simple "add up the clues" formula — fast, and lets us see if there's any real signal before investing more</td></tr>
+        <tr><td>Will they ever pay? (final version)</td><td>LightGBM (a "gradient boosting" model)</td><td>Once we knew there was real signal, a smarter model that also catches combinations of clues (e.g. good channel <i>and</i> long browsing together)</td></tr>
+        <tr><td>How long will they stay? (group view)</td><td>Kaplan-Meier survival curve</td><td>The honest way to average "how long things last" when some users are still active and we don't know their ending yet</td></tr>
+        <tr><td>How long will they stay? (personal view)</td><td>Cox model</td><td>The personalized version of the same idea — one retention curve for <i>this</i> user, not just the group average</td></tr>
+        <tr><td>How much will they spend?</td><td>Tweedie regression</td><td>Built for data where almost everyone spends ₹0 and a small few spend a lot — same shape as insurance claims</td></tr>
+        <tr><td>Combining the personal score with the group average</td><td>Dynamic-weight blending (a formula, not a trained model)</td><td>Trusts the group average for a brand-new user, and shifts trust toward their personal score as real behavior shows up</td></tr>
+      </tbody>
+    </table>
+    <p class="note" style="margin-top:10px;">Notice the pattern: for both "will they pay" and "how long will they stay," we start with the simple, see-through version first to prove there's real signal, then upgrade to the more powerful version once we know it's worth it. We never skip straight to the fancy model on faith.</p>
+  </div>
+
+  <h2 style="margin:18px 0 10px;">Each question, explained slowly</h2>
+
+  <details open>
+    <summary>1. Will they ever pay us?</summary>
+    <div style="margin-top:12px; font-size:13px;">
+      <p><b>In plain words:</b> a Yes/No guess, turned into a probability like "12% likely to pay."</p>
+      <p><b>Step one — Logistic Regression.</b> Picture a checklist: each fact about the user (which channel, what phone, what time they signed up) gets a point value, and we add up the points to get a probability. It's the simplest model that exists for a Yes/No question. We used it first on purpose — not because it's the best, but because it's completely see-through: we can read exactly why it made every single guess. Using only signup-moment facts, it barely beat a coin flip. That was still useful — it told us signup facts alone aren't enough, and pointed us toward needing real behavior instead of just guessing better with the same weak clues.</p>
+      <p><b>Step two — add browsing behavior, same checklist model.</b> The moment we added "how long before they messaged" and "how many times they opened the app" to the same checklist model, it got meaningfully better at telling payers from non-payers. That confirmed the behavior signal was real, not a fluke.</p>
+      <p><b>Step three — LightGBM (upgrade to the production model).</b> A checklist can only add points one clue at a time. LightGBM is a step up: it's a model that builds itself gradually and can notice when two clues matter differently <i>together</i> than they do apart — for example, "browsed a long time" might mean something different for a Google Ads user than for a referred friend. Once we'd proven the behavior signal was real, LightGBM was the model that could actually squeeze the most out of it. This became the production model for "will they pay."</p>
+      <p><b>The one clue that mattered most:</b> minutes between signup and first message. In the trained model, this single number accounted for the overwhelming majority of everything the model relies on to make its guess.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>2. How long will they stick around?</summary>
+    <div style="margin-top:12px; font-size:13px;">
+      <p><b>In plain words:</b> a curve showing "% of users still active" on day 1, day 7, day 14, day 30.</p>
+      <p><b>Why we couldn't just average "days active so far."</b> Some users are still active right now — we simply haven't watched them long enough to know when they'll stop. A plain average would unfairly treat "still going strong" the same as "confirmed gone," dragging the number down and lying to us.</p>
+      <p><b>The model — survival analysis (Kaplan-Meier curve).</b> This is the standard statistics tool built exactly for that situation: people whose story isn't finished yet. It produces an honest curve of "% still active" over time instead of a misleading single average. This is the group-level retention curve you see on the Dashboard tab.</p>
+      <p><b>The personalized version — Cox model.</b> A group curve is great for a slide to leadership, but not much use for one specific new signup. The Cox model is the personalized cousin of the same idea: instead of one curve for everyone, it estimates a day-1/7/14/30 curve for <i>this individual</i>, based on their own signup facts and browsing behavior. This is the model actually running behind the "Retention" numbers on the Prediction tab.</p>
+      <p><b>What we proved before trusting any of it:</b> a statistical test (log-rank test) confirmed that paying users really do stick around dramatically longer than non-payers — and that gap held up even after we made the comparison fair (removing users who could never have paid in the first place). Not a coincidence of one sample; a real, checked pattern.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>3. How much money will they bring in?</summary>
+    <div style="margin-top:12px; font-size:13px;">
+      <p><b>In plain words:</b> a rupee number — predicted spend in a user's first 30 days.</p>
+      <p><b>Why an ordinary regression model doesn't work here.</b> The overwhelming majority of users spend exactly ₹0 in their first month, with a thin tail of real payers, some of whom spend a lot. An ordinary "predict the average" model, faced with mostly zeros and a few big numbers, tends to hedge toward a boring, useless middle value for everyone — not confidently zero, not confidently high, just wrong for almost everybody.</p>
+      <p><b>The model — Tweedie regression.</b> This is a regression method built specifically for that "mostly zero, with a real skewed tail" shape — the same technique insurance companies use to predict claims, since most policyholders file nothing and a few file a lot. It's the correctly-shaped tool for the job rather than a generic one forced to fit.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>4. How the three predictions get combined for one real signup</summary>
+    <div style="margin-top:12px; font-size:13px;">
+      <p><b>The problem:</b> a brand-new signup with zero browsing history yet has nothing for the personal model (LightGBM) to work with. But we still owe them a score the instant they sign up.</p>
+      <p><b>The fix — dynamic-weight blending.</b> We combine two numbers: the personal model's guess, and a "channel prior" (the plain historical payer rate for people who signed up the same way this user did — think "what % of Google Ads users have paid us, historically"). The weight given to the personal guess starts low and climbs the more real behavior a user shows us.</p>
+      <p><b>The analogy:</b> judging a new employee. Day one, with zero track record, you trust the team average. A few weeks in, once they've actually shown you real work, you start trusting their personal record more than the team average. Same idea here — except the "few weeks" is measured in minutes of browsing before a first message.</p>
+      <p><b>One deliberate thing we did <i>not</i> do:</b> we did not discount a channel's historical payer rate by how "genuinely incremental" that channel's ad spend is (a separate, real question that matters for marketing budget decisions). A user who converted is still a real payer regardless of whether the ad that brought them was the deciding factor — mixing that causal question into this forecasting one would have made predictions less accurate, not more honest. The two stay separate on purpose.</p>
+    </div>
+  </details>
+
+  <div class="callout" style="margin-top:16px;">
+    <h2>&#128204; The two habits worth remembering</h2>
+    <div class="callout-grid">
+      <div class="c"><p class="t">Start simple, then upgrade</p><p class="d">Every model on this page started as the simplest possible version, to prove real signal exists, before we spent effort on a fancier one.</p></div>
+      <div class="c"><p class="t">One number kept winning</p><p class="d">"Minutes between signup and first message" is the single strongest clue across the payer model, the retention model, and the blending formula.</p></div>
+      <div class="c"><p class="t">Never guess a filler number</p><p class="d">Wherever a value was missing because it genuinely didn't apply (e.g. "time to first message" for someone who never messaged), we kept that as its own explicit flag instead of quietly filling in a 0 that could be misread as "instant."</p></div>
+    </div>
+  </div>
+
+  </div><!-- /tabPanelConcept -->
 
 </div>
 
