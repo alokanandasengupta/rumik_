@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rumik Pre-First-Message Scorer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <header class="page-header">
+    <h1>Pre-first-message scorer</h1>
+    <p class="subtitle">Guess whether a signup will pay, how much, and how long they'll stick around, before or right after their first message.</p>
+  </header>
+
+  <div id="model-banner" class="banner banner-warning" hidden></div>
+
+  <div class="layout">
+    <form id="score-form" class="card">
+      <h2>Signup details</h2>
+      <p class="hint">Known the instant someone signs up.</p>
+
+      <div class="grid">
+        <label>Platform
+          <select name="platform" required></select>
+        </label>
+        <label>Pricing region
+          <select name="pricing_region_at_signup" required></select>
+        </label>
+        <label>Creation source
+          <select name="creation_source" required></select>
+        </label>
+        <label>Active experiment
+          <select name="active_experiment" required></select>
+        </label>
+        <label>Channel
+          <select name="channel" required></select>
+        </label>
+        <label>Ad intent
+          <select name="ad_intent" required></select>
+        </label>
+        <label>Targeting age bucket
+          <select name="targeting_age_bucket" required></select>
+        </label>
+        <label>Targeting gender
+          <select name="targeting_gender" required></select>
+        </label>
+        <label>Targeting interest
+          <select name="targeting_interest" required></select>
+        </label>
+        <label>Nudge experiment arm
+          <select name="nudge_experiment_arm" required></select>
+        </label>
+        <label>Signup hour of day
+          <select name="signup_hour_of_day" required></select>
+        </label>
+        <label>Signup day of week
+          <select name="signup_day_of_week" required>
+            <option value="0">Monday</option>
+            <option value="1">Tuesday</option>
+            <option value="2">Wednesday</option>
+            <option value="3">Thursday</option>
+            <option value="4">Friday</option>
+            <option value="5">Saturday</option>
+            <option value="6">Sunday</option>
+          </select>
+        </label>
+      </div>
+
+      <h2>Pre-message behavior</h2>
+      <p class="hint">Only fill this in if the user has opened the app since signing up.</p>
+
+      <label class="checkbox-row">
+        <input type="checkbox" name="never_activated" checked>
+        Hasn't opened the app / messaged yet
+      </label>
+
+      <div class="grid" id="behavior-fields" disabled>
+        <label>Minutes before first message
+          <input type="number" name="browse_to_chat_latency_minutes" min="0" value="0">
+        </label>
+        <label>App opens before first message
+          <input type="number" name="n_app_opens_pre_message" min="0" step="1" value="0">
+        </label>
+        <label>Revenue before first message (INR)
+          <input type="number" name="pre_message_revenue" min="0" value="0">
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" name="saw_plans_pre_message">
+          Viewed subscription plans
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" name="purchased_pre_message">
+          Already purchased
+        </label>
+      </div>
+
+      <button type="submit" id="submit-btn">Score this user</button>
+      <p id="form-error" class="error" hidden></p>
+    </form>
+
+    <div class="card results" id="results" hidden>
+      <h2>Prediction</h2>
+
+      <div class="meter-block">
+        <div class="meter-label">
+          <span>Probability they pay</span>
+          <span id="payer-probability-value" class="meter-value">-</span>
+        </div>
+        <div class="meter-track">
+          <div class="meter-fill" id="payer-probability-fill"></div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-tile">
+          <div class="stat-label">Predicted spend in 30 days</div>
+          <div class="stat-value" id="ltv-value">-</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Signal weight used</div>
+          <div class="stat-value" id="signal-weight-value">-</div>
+        </div>
+      </div>
+
+      <h3>Retention probability</h3>
+      <div class="bars" id="retention-bars"></div>
+      <div class="bar-labels" id="retention-day-labels"></div>
+    </div>
+  </div>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
