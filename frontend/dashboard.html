@@ -69,6 +69,11 @@
   .note { font-size:11px; color:#9A998F; margin-top:6px; }
   .sub a { color:#378ADD; text-decoration:none; font-weight:600; }
   .sub a:hover { text-decoration:underline; }
+  .tabbar { display:flex; gap:4px; margin-bottom:20px; border-bottom:1px solid #E8E7E2; }
+  .tabbar button { appearance:none; border:none; background:none; padding:10px 16px; font-size:14px; font-weight:600; color:#6B6B66; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; font-family:inherit; }
+  .tabbar button.active { color:#1A1A18; border-bottom-color:#378ADD; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
   .scorer-label { display:block; font-size:12px; color:#6B6B66; margin-bottom:10px; }
   .scorer-label select, .scorer-label input { display:block; width:100%; margin-top:4px; height:32px; border:1px solid #D8D6D0; border-radius:6px; padding:0 8px; font-size:13px; font-family:inherit; background:#fff; color:#1A1A18; }
   .scorer-behavior { display:none; gap:10px; margin-top:2px; }
@@ -100,6 +105,13 @@
       </select>
     </div>
   </div>
+
+  <div class="tabbar">
+    <button type="button" class="tab-btn active" data-tab="tabPanelDashboard">Dashboard</button>
+    <button type="button" class="tab-btn" data-tab="tabPanelPrediction">Prediction</button>
+  </div>
+
+  <div id="tabPanelDashboard" class="tab-panel active">
 
   <div class="metrics" id="metricsRow"></div>
 
@@ -181,6 +193,12 @@
     <p class="note">Mirrors the notebook's own payer-definition split (subscription-only vs. any-revenue) and its decile-lift check on predicted LTV.</p>
   </details>
 
+  <p class="note">Date filters bucket by signup/transaction month (data has month-level granularity); channel filter splits paid vs. organic acquisition. All numbers computed live from the uploaded dataset.</p>
+
+  </div><!-- /tabPanelDashboard -->
+
+  <div id="tabPanelPrediction" class="tab-panel">
+
   <div class="callout">
     <h2>&#10022; Score a user with the pre-first-message model</h2>
     <p>Every metric above is a raw ingredient. The model turns three of them into the features that actually predict who pays:</p>
@@ -255,7 +273,7 @@
     </div>
   </div>
 
-  <p class="note">Date filters bucket by signup/transaction month (data has month-level granularity); channel filter splits paid vs. organic acquisition. All numbers computed live from the uploaded dataset.</p>
+  </div><!-- /tabPanelPrediction -->
 
 </div>
 
@@ -702,6 +720,15 @@ scEls.submit.addEventListener('click', async () => {
 });
 
 loadScorerOptions();
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
 
 </script>
 </body>
