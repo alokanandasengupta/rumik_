@@ -1,34 +1,44 @@
 :root {
-  --surface-1: #fcfcfb;
-  --page: #f9f9f7;
-  --text-primary: #0b0b0b;
-  --text-secondary: #52514e;
-  --text-muted: #898781;
-  --gridline: #e1e0d9;
-  --baseline: #c3c2b7;
-  --border: rgba(11, 11, 11, 0.10);
-  --series-1: #2a78d6;
-  --series-1-track: #b7d3f6;
+  --surface-1: #ffffff;
+  --page: #f5f4fa;
+  --text-primary: #15121f;
+  --text-secondary: #6e6b80;
+  --text-muted: #9c99ac;
+  --gridline: #eae7f3;
+  --baseline: #d8d4e8;
+  --border: rgba(21, 18, 31, 0.08);
+  --series-1: #6a4ff0;
+  --series-1-hover: #5a3fe0;
+  --series-1-ink: #4a3aa7;
+  --series-1-track: #e7dffc;
   --good: #0ca30c;
   --warning-bg: #fef3e0;
   --warning-text: #8a5a00;
+  --shadow-sm: 0 1px 2px rgba(21, 18, 31, 0.05), 0 1px 6px rgba(21, 18, 31, 0.04);
+  --shadow-md: 0 2px 6px rgba(21, 18, 31, 0.06), 0 8px 24px rgba(21, 18, 31, 0.08);
+  --radius: 16px;
+  --radius-sm: 10px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface-1: #1a1a19;
-    --page: #0d0d0d;
+    --surface-1: #1b1726;
+    --page: #100d1a;
     --text-primary: #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted: #898781;
-    --gridline: #2c2c2a;
-    --baseline: #383835;
+    --text-secondary: #c3c0d6;
+    --text-muted: #8b87a0;
+    --gridline: #2e2a40;
+    --baseline: #3a3550;
     --border: rgba(255, 255, 255, 0.10);
-    --series-1: #3987e5;
-    --series-1-track: rgba(57, 135, 229, 0.22);
-    --good: #0ca30c;
+    --series-1: #8f76ff;
+    --series-1-hover: #a390ff;
+    --series-1-ink: #c3b6ff;
+    --series-1-track: rgba(143, 118, 255, 0.22);
+    --good: #23c623;
     --warning-bg: #3a2c0d;
     --warning-text: #f0b429;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 6px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.35);
   }
 }
 
@@ -36,9 +46,10 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
   background: var(--page);
   color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
 }
 
 .page {
@@ -48,7 +59,9 @@ body {
 }
 
 .page-header h1 {
-  font-size: 28px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   margin: 0 0 6px;
 }
 
@@ -59,10 +72,11 @@ body {
 }
 
 .banner {
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 16px;
   margin-bottom: 20px;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .banner-warning {
@@ -84,12 +98,15 @@ body {
 .card {
   background: var(--surface-1);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 24px;
+  box-shadow: var(--shadow-sm);
 }
 
 .card h2 {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
   margin: 0 0 4px;
 }
 
@@ -122,6 +139,7 @@ label {
   flex-direction: column;
   gap: 4px;
   font-size: 13px;
+  font-weight: 500;
   color: var(--text-secondary);
 }
 
@@ -140,13 +158,21 @@ select, input[type="number"] {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--page);
+  background: var(--surface-1);
   color: var(--text-primary);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+select:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: var(--series-1);
+  box-shadow: 0 0 0 3px var(--series-1-track);
 }
 
 input[type="checkbox"] {
   width: 16px;
   height: 16px;
+  accent-color: var(--series-1);
 }
 
 #submit-btn {
@@ -154,12 +180,21 @@ input[type="checkbox"] {
   width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--series-1);
   color: white;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14.5px;
+  font-weight: 700;
   cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+#submit-btn:hover:not(:disabled) {
+  background: var(--series-1-hover);
+}
+
+#submit-btn:active:not(:disabled) {
+  transform: scale(0.99);
 }
 
 #submit-btn:disabled {
@@ -171,6 +206,7 @@ input[type="checkbox"] {
   color: #d03b3b;
   font-size: 13px;
   margin-top: 10px;
+  font-weight: 500;
 }
 
 /* Results */
@@ -190,12 +226,13 @@ input[type="checkbox"] {
 
 .meter-value {
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 .meter-track {
-  height: 14px;
+  height: 12px;
   border-radius: 7px;
   background: var(--series-1-track);
   overflow: hidden;
@@ -204,9 +241,9 @@ input[type="checkbox"] {
 .meter-fill {
   height: 100%;
   width: 0%;
-  background: var(--series-1);
+  background: linear-gradient(90deg, var(--series-1-ink), var(--series-1));
   border-radius: 7px;
-  transition: width 0.4s ease;
+  transition: width 0.4s cubic-bezier(.4,0,.2,1);
 }
 
 .stat-row {
@@ -218,19 +255,24 @@ input[type="checkbox"] {
 
 .stat-tile {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
+  background: var(--page);
 }
 
 .stat-label {
-  font-size: 12px;
-  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   margin-bottom: 4px;
 }
 
 .stat-value {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .bars {

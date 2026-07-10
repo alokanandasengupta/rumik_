@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <title>IRA Analytics — 50K user cohort</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script id="chartjs-holder"></script>
 <script>/*!
  * Chart.js v4.4.0
@@ -20,67 +23,92 @@
 //# sourceMappingURL=chart.umd.js.map
 </script>
 <style>
+  :root {
+    --ink:          #15121F;
+    --ink-2:        #6E6B80;
+    --ink-3:        #9C99AC;
+    --page:         #F5F4FA;
+    --surface:      #FFFFFF;
+    --border:       #EAE7F3;
+    --border-2:     #F1EFF8;
+    --accent:       #6A4FF0;
+    --accent-hover: #5A3FE0;
+    --accent-ink:   #4A3AA7;
+    --accent-soft:  #F1EDFE;
+    --accent-soft-2:#E7DFFC;
+    --shadow-sm:    0 1px 2px rgba(21,18,31,0.05), 0 1px 6px rgba(21,18,31,0.04);
+    --shadow-md:    0 2px 6px rgba(21,18,31,0.06), 0 8px 24px rgba(21,18,31,0.06);
+    --radius:       14px;
+    --radius-sm:    9px;
+  }
   * { box-sizing: border-box; }
-  body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-         background:#F7F7F5; color:#1A1A18; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 24px 60px; }
-  h1 { font-size:22px; font-weight:600; margin:0 0 2px; letter-spacing:-0.01em; }
-  h2 { font-size:16px; font-weight:600; margin:0 0 12px; }
-  .sub { font-size:13px; color:#6B6B66; margin:0; }
-  .topbar { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; margin-bottom:22px; }
-  select { height:34px; border:1px solid #D8D6D0; border-radius:6px; background:#fff; font-size:13px; padding:0 10px; color:#1A1A18; }
+  body { margin:0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         background:var(--page); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; }
+  h1 { font-size:21px; font-weight:700; margin:0 0 3px; letter-spacing:-0.015em; }
+  h2 { font-size:15px; font-weight:700; margin:0 0 12px; letter-spacing:-0.005em; }
+  .sub { font-size:13px; color:var(--ink-2); margin:0; }
+  .topbar { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; margin-bottom:24px; }
+  select { height:34px; border:1px solid var(--border); border-radius:8px; background:var(--surface); font-size:13px; padding:0 10px; color:var(--ink); font-family:inherit; box-shadow:var(--shadow-sm); }
+  select:focus, input:focus { outline:2px solid var(--accent); outline-offset:1px; }
   .filters { display:flex; gap:8px; }
   .metrics { display:grid; grid-template-columns:repeat(6, 1fr); gap:12px; margin-bottom:22px; }
   @media (max-width: 900px){ .metrics{ grid-template-columns:repeat(3,1fr);} }
-  .card { background:#fff; border:1px solid #E8E7E2; border-radius:10px; padding:14px 16px; }
-  .card .label { font-size:12px; color:#6B6B66; margin:0 0 6px; }
-  .card .value { font-size:22px; font-weight:600; margin:0; letter-spacing:-0.01em; }
-  .card .hint { font-size:11px; color:#9A998F; margin:4px 0 0; }
-  .section { background:#fff; border:1px solid #E8E7E2; border-radius:12px; padding:18px 20px; margin-bottom:16px; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:15px 16px; box-shadow:var(--shadow-sm); transition:box-shadow 0.15s ease, transform 0.15s ease; }
+  .card:hover { box-shadow:var(--shadow-md); transform:translateY(-1px); }
+  .card .label { font-size:11.5px; font-weight:600; color:var(--ink-2); margin:0 0 7px; text-transform:uppercase; letter-spacing:0.02em; }
+  .card .value { font-size:23px; font-weight:800; margin:0; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+  .card .hint { font-size:11px; color:var(--ink-3); margin:4px 0 0; }
+  .section { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px; box-shadow:var(--shadow-sm); }
   .row2 { display:grid; grid-template-columns:1.4fr 1fr; gap:18px; align-items:center; margin-bottom:16px; }
   @media (max-width: 900px){ .row2{ grid-template-columns:1fr; } }
   .chartbox { position:relative; height:200px; }
   .chartbox.tall { height:230px; }
-  .legend-row { display:flex; gap:16px; font-size:12px; color:#6B6B66; justify-content:center; margin-bottom:14px; flex-wrap:wrap;}
+  .legend-row { display:flex; gap:16px; font-size:12px; color:var(--ink-2); justify-content:center; margin-bottom:14px; flex-wrap:wrap;}
   .legend-row .sw { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; }
-  .divider { border-top:1px solid #E8E7E2; padding-top:16px; margin-top:2px; }
-  details { background:#fff; border:1px solid #E8E7E2; border-radius:10px; padding:12px 16px; margin-bottom:8px; }
-  summary { cursor:pointer; font-weight:600; font-size:14px; list-style:none; display:flex; align-items:center; gap:8px; }
+  .divider { border-top:1px solid var(--border-2); padding-top:16px; margin-top:2px; }
+  details { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:13px 16px; margin-bottom:8px; box-shadow:var(--shadow-sm); }
+  summary { cursor:pointer; font-weight:700; font-size:13.5px; list-style:none; display:flex; align-items:center; gap:8px; }
   summary::-webkit-details-marker { display:none; }
-  summary:before { content:"▸"; font-size:11px; color:#9A998F; transition:transform 0.15s; }
+  summary:before { content:"▸"; font-size:11px; color:var(--accent); transition:transform 0.15s; }
   details[open] summary:before { transform:rotate(90deg); }
   .dd-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px; }
   @media (max-width: 900px){ .dd-grid{ grid-template-columns:1fr; } }
-  .dd-title { font-size:12px; font-weight:600; color:#4A4A46; margin:0 0 8px; }
+  .dd-title { font-size:11.5px; font-weight:700; color:var(--ink-2); margin:0 0 8px; text-transform:uppercase; letter-spacing:0.02em; }
   .stat-inline { display:flex; gap:18px; margin-top:10px; }
-  .stat-inline .s { font-size:20px; font-weight:600; }
-  .stat-inline .l { font-size:11px; color:#6B6B66; }
-  .callout { background:#EFEAFB; border-radius:12px; padding:18px 20px; margin-top:16px; }
-  .callout h2 { color:#3C3489; display:flex; align-items:center; gap:8px; }
-  .callout p { font-size:13px; color:#3C3489; margin:0 0 12px; }
+  .stat-inline .s { font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .stat-inline .l { font-size:11px; color:var(--ink-2); }
+  .callout { background:var(--accent-soft); border-radius:var(--radius); padding:20px 22px; margin-top:16px; border:1px solid var(--accent-soft-2); }
+  .callout h2 { color:var(--accent-ink); display:flex; align-items:center; gap:8px; }
+  .callout p { font-size:13px; color:var(--accent-ink); margin:0 0 12px; }
   .callout-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
   @media (max-width: 900px){ .callout-grid{ grid-template-columns:1fr; } }
-  .callout-grid .c { background:#fff; border-radius:8px; padding:12px 14px; }
-  .callout-grid .c .t { font-size:12px; color:#6B6B66; margin:0 0 3px; }
-  .callout-grid .c .d { font-size:13px; font-weight:600; margin:0; }
-  table.mini { width:100%; border-collapse:collapse; font-size:12px; }
-  table.mini th { text-align:left; color:#6B6B66; font-weight:600; padding:4px 6px; border-bottom:1px solid #E8E7E2; }
-  table.mini td { padding:4px 6px; border-bottom:1px solid #F0EFEB; }
-  .note { font-size:11px; color:#9A998F; margin-top:6px; }
-  .sub a { color:#378ADD; text-decoration:none; font-weight:600; }
+  .callout-grid .c { background:var(--surface); border-radius:var(--radius-sm); padding:13px 14px; box-shadow:var(--shadow-sm); }
+  .callout-grid .c .t { font-size:11.5px; color:var(--ink-2); margin:0 0 3px; }
+  .callout-grid .c .d { font-size:13px; font-weight:700; margin:0; color:var(--ink); }
+  table.mini { width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.mini th { text-align:left; color:var(--ink-2); font-weight:700; padding:6px 6px; border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:0.02em; }
+  table.mini td { padding:7px 6px; border-bottom:1px solid var(--border-2); }
+  table.mini tbody tr:hover { background:var(--page); }
+  .note { font-size:11px; color:var(--ink-3); margin-top:6px; }
+  .sub a { color:var(--accent-ink); text-decoration:none; font-weight:600; }
   .sub a:hover { text-decoration:underline; }
-  .tabbar { display:flex; gap:4px; margin-bottom:20px; border-bottom:1px solid #E8E7E2; }
-  .tabbar button { appearance:none; border:none; background:none; padding:10px 16px; font-size:14px; font-weight:600; color:#6B6B66; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; font-family:inherit; }
-  .tabbar button.active { color:#1A1A18; border-bottom-color:#378ADD; }
+  .tabbar { display:flex; gap:4px; margin-bottom:22px; border-bottom:1px solid var(--border); }
+  .tabbar button { appearance:none; border:none; background:none; padding:10px 18px; font-size:13.5px; font-weight:700; color:var(--ink-2); cursor:pointer; border-bottom:2.5px solid transparent; margin-bottom:-1px; font-family:inherit; border-radius:8px 8px 0 0; transition:color 0.15s, background 0.15s; }
+  .tabbar button:hover { color:var(--ink); background:var(--surface); }
+  .tabbar button.active { color:var(--accent-ink); border-bottom-color:var(--accent); }
   .tab-panel { display:none; }
   .tab-panel.active { display:block; }
-  .scorer-label { display:block; font-size:12px; color:#6B6B66; margin-bottom:10px; }
-  .scorer-label select, .scorer-label input { display:block; width:100%; margin-top:4px; height:32px; border:1px solid #D8D6D0; border-radius:6px; padding:0 8px; font-size:13px; font-family:inherit; background:#fff; color:#1A1A18; }
+  .scorer-label { display:block; font-size:12px; font-weight:600; color:var(--ink-2); margin-bottom:10px; }
+  .scorer-label select, .scorer-label input { display:block; width:100%; margin-top:4px; height:32px; border:1px solid var(--border); border-radius:8px; padding:0 8px; font-size:13px; font-family:inherit; background:var(--surface); color:var(--ink); box-shadow:none; }
   .scorer-behavior { display:none; gap:10px; margin-top:2px; }
   .scorer-behavior.open { display:grid; grid-template-columns:1fr 1fr; }
+  #scSubmit { transition:background 0.15s ease, transform 0.1s ease; }
+  #scSubmit:hover:not(:disabled) { background:var(--accent-hover) !important; }
+  #scSubmit:active:not(:disabled) { transform:scale(0.985); }
   #scSubmit:disabled { opacity:0.5; cursor:not-allowed; }
-  .meter-track { height:12px; border-radius:6px; background:#DCD8F5; overflow:hidden; margin-top:6px; }
-  .meter-fill { height:100%; background:#3C3489; border-radius:6px; width:0%; transition:width 0.3s ease; }
+  .meter-track { height:10px; border-radius:6px; background:var(--accent-soft-2); overflow:hidden; margin-top:6px; }
+  .meter-fill { height:100%; background:linear-gradient(90deg, var(--accent-ink), var(--accent)); border-radius:6px; width:0%; transition:width 0.4s cubic-bezier(.4,0,.2,1); }
 </style>
 </head>
 <body>
@@ -123,10 +151,10 @@
       <div class="chartbox tall"><canvas id="splitChart"></canvas></div>
     </div>
     <div class="legend-row">
-      <span><span class="sw" style="background:#5DCAA5"></span>Revenue (₹, bars)</span>
-      <span><span class="sw" style="background:#D85A30; border-radius:50%"></span>ARPU (₹, line)</span>
-      <span style="margin-left:10px;"><span class="sw" style="background:#1D9E75"></span>Subscriptions</span>
-      <span><span class="sw" style="background:#D85A30"></span>Credit packs</span>
+      <span><span class="sw" style="background:#1BAF7A"></span>Revenue (₹, bars)</span>
+      <span><span class="sw" style="background:#EB6834; border-radius:50%"></span>ARPU (₹, line)</span>
+      <span style="margin-left:10px;"><span class="sw" style="background:#1BAF7A"></span>Subscriptions</span>
+      <span><span class="sw" style="background:#EB6834"></span>Credit packs</span>
     </div>
     <div class="divider">
       <p class="dd-title">Revenue by plan over time</p>
@@ -162,8 +190,8 @@
       <p class="dd-title">% of users still active, by day since signup</p>
       <div class="chartbox tall"><canvas id="retChart"></canvas></div>
       <div class="legend-row" style="margin-top:10px;">
-        <span><span class="sw" style="background:#639922"></span>Payers</span>
-        <span><span class="sw" style="background:#B4B2A9"></span>Non-payers</span>
+        <span><span class="sw" style="background:#008300"></span>Payers</span>
+        <span><span class="sw" style="background:#9C99AC"></span>Non-payers</span>
       </div>
     </div>
   </details>
@@ -246,7 +274,7 @@
               <input type="number" id="scOpens" min="0" value="0">
             </label>
           </div>
-          <button id="scSubmit" style="margin-top:6px; width:100%; padding:10px; border:none; border-radius:8px; background:#3C3489; color:#fff; font-size:13px; font-weight:600; cursor:pointer;">Score this user</button>
+          <button id="scSubmit" style="margin-top:6px; width:100%; padding:10px; border:none; border-radius:8px; background:var(--accent); color:#fff; font-size:13px; font-weight:600; cursor:pointer;">Score this user</button>
         </div>
         <div>
           <p class="dd-title">Prediction</p>
@@ -292,11 +320,11 @@
     <h2>Two moments in a user's life, two models</h2>
     <p style="font-size:13px; margin-bottom:14px;">Some users give us nothing to go on except how they signed up (which ad, which phone, what time of day). Others browse around a bit before messaging — and that browsing turns out to say a lot about them. So we built two models, not one:</p>
     <div class="dd-grid">
-      <div style="background:#F7F7F5; border-radius:8px; padding:12px 14px;">
+      <div style="background:var(--page); border-radius:8px; padding:12px 14px;">
         <p class="dd-title">Model 1 — "T0", the instant they sign up</p>
         <p style="font-size:13px;">Uses only what we know the second someone signs up (channel, phone type, time of day). Works for <b>every single user</b>, no exceptions. Think of it as a first impression.</p>
       </div>
-      <div style="background:#F7F7F5; border-radius:8px; padding:12px 14px;">
+      <div style="background:var(--page); border-radius:8px; padding:12px 14px;">
         <p class="dd-title">Model 2 — "T0+", after a bit of browsing</p>
         <p style="font-size:13px;">Uses anything that happened between signup and their first message — how long they browsed, how many times they opened the app. Sharper, but only exists once a user actually does something.</p>
       </div>
@@ -382,6 +410,18 @@
 </script>
 <script src="env-config.js"></script>
 <script>
+Chart.defaults.font.family = "'Inter', -apple-system, 'Segoe UI', sans-serif";
+Chart.defaults.color = '#6E6B80';
+Chart.defaults.borderColor = '#EAE7F3';
+Chart.defaults.plugins.tooltip.backgroundColor = '#15121F';
+Chart.defaults.plugins.tooltip.titleFont = { family: "'Inter', sans-serif", weight: '700', size: 12 };
+Chart.defaults.plugins.tooltip.bodyFont = { family: "'Inter', sans-serif", size: 12 };
+Chart.defaults.plugins.tooltip.padding = 10;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+Chart.defaults.plugins.tooltip.displayColors = false;
+Chart.defaults.plugins.title.font = { family: "'Inter', sans-serif", weight: '700', size: 12 };
+Chart.defaults.plugins.title.color = '#15121F';
+
 const DATA = JSON.parse(document.getElementById('data-holder').textContent);
 const U = DATA.users_columnar;
 const N = DATA.meta.n_users;
@@ -476,8 +516,8 @@ function renderRevenuePlans(tx){
 
   upsertChart('planChart', {
     data: { labels: plans, datasets: [
-      { type:'bar', label:'Revenue', data:revData, backgroundColor:'#5DCAA5', borderRadius:4, yAxisID:'y' },
-      { type:'line', label:'ARPU', data:arpuData, borderColor:'#D85A30', backgroundColor:'#D85A30', pointRadius:4, yAxisID:'y1' }
+      { type:'bar', label:'Revenue', data:revData, backgroundColor:'#1BAF7A', borderRadius:4, yAxisID:'y' },
+      { type:'line', label:'ARPU', data:arpuData, borderColor:'#EB6834', backgroundColor:'#EB6834', pointRadius:4, yAxisID:'y1' }
     ]},
     options: { responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, title:{display:true, text:'Revenue and ARPU by plan', font:{size:12}} },
@@ -490,7 +530,7 @@ function renderRevenuePlans(tx){
   const packTotal = totals['Credit packs'];
   upsertChart('splitChart', {
     type:'doughnut',
-    data:{ labels:['Subscriptions','Credit packs'], datasets:[{ data:[subTotal, packTotal], backgroundColor:['#1D9E75','#D85A30'] }] },
+    data:{ labels:['Subscriptions','Credit packs'], datasets:[{ data:[subTotal, packTotal], backgroundColor:['#1BAF7A','#EB6834'] }] },
     options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, title:{display:true, text:'% of revenue', font:{size:12}} } }
   });
 
@@ -498,7 +538,7 @@ function renderRevenuePlans(tx){
   const monthLabels = ['Jan','Feb','Mar','Apr','May','Jun'];
   const byMonth = {}; plans.forEach(p=> byMonth[p]=months.map(()=>0));
   tx.forEach(t => { const mi = t.m-1; if (byMonth[t.p] && mi>=0 && mi<6) byMonth[t.p][mi]+=t.a; });
-  const colors = {'Friend':'#378ADD','IRA plus':'#7F77DD','Credit packs':'#D85A30'};
+  const colors = {'Friend':'#2A78D6','IRA plus':'#4A3AA7','Credit packs':'#EB6834'};
   upsertChart('trendChart', {
     type:'line',
     data:{ labels:monthLabels, datasets: plans.map(p=>({ label:p, data:byMonth[p], borderColor:colors[p], backgroundColor:colors[p], tension:0.3 })) },
@@ -522,23 +562,23 @@ function renderAcquisition(mask, spend){
 
   const labels = CHANNELS;
   upsertChart('acqSignups', { type:'bar',
-    data:{ labels, datasets:[{ data:labels.map(c=>byChan[c].signups), backgroundColor:'#378ADD', borderRadius:4 }] },
+    data:{ labels, datasets:[{ data:labels.map(c=>byChan[c].signups), backgroundColor:'#2A78D6', borderRadius:4 }] },
     options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
       plugins:{legend:{display:false}}, scales:{ x:{ticks:{font:{size:9}}}, y:{ticks:{font:{size:9}}} } } });
 
   upsertChart('acqCac', { type:'bar',
-    data:{ labels, datasets:[{ data:labels.map(c=> byChan[c].payers ? Math.round(spendByChan[c]/byChan[c].payers) : 0), backgroundColor:'#7F77DD', borderRadius:4 }] },
+    data:{ labels, datasets:[{ data:labels.map(c=> byChan[c].payers ? Math.round(spendByChan[c]/byChan[c].payers) : 0), backgroundColor:'#4A3AA7', borderRadius:4 }] },
     options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
       plugins:{legend:{display:false}}, scales:{ x:{ticks:{font:{size:9}}}, y:{ticks:{font:{size:9}}} } } });
 
   upsertChart('acqPayerRate', { type:'bar',
-    data:{ labels, datasets:[{ data:labels.map(c=> byChan[c].signups ? +(100*byChan[c].payers/byChan[c].signups).toFixed(1) : 0), backgroundColor:'#1D9E75', borderRadius:4 }] },
+    data:{ labels, datasets:[{ data:labels.map(c=> byChan[c].signups ? +(100*byChan[c].payers/byChan[c].signups).toFixed(1) : 0), backgroundColor:'#1BAF7A', borderRadius:4 }] },
     options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
       plugins:{legend:{display:false}}, scales:{ x:{ticks:{font:{size:9}, callback:v=>v+'%'}}, y:{ticks:{font:{size:9}}} } } });
 
   const months=['Jan','Feb','Mar','Apr','May','Jun'];
   const arms = [...new Set(DATA.experiment_calendar.map(r=>r.arm))];
-  const armColors = {'undefined':'#B4B2A9','price_1_trial_89_regular':'#378ADD','price_1_trial_499_999':'#D85A30'};
+  const armColors = {'undefined':'#9C99AC','price_1_trial_89_regular':'#2A78D6','price_1_trial_499_999':'#EB6834'};
   const dsets = arms.map(a => ({ label:a, data:[1,2,3,4,5,6].map(m=>{
       const row = DATA.experiment_calendar.find(r=>r.m===m && r.arm===a);
       return row ? +(row.share*100).toFixed(1) : 0;
@@ -575,17 +615,17 @@ function renderEngagement(mask){
     }
   }
   upsertChart('engMessages', { type:'bar',
-    data:{ labels:['0','1-5','6-15','16-40','40+'], datasets:[{data:msgBuckets, backgroundColor:'#639922', borderRadius:4}]},
+    data:{ labels:['0','1-5','6-15','16-40','40+'], datasets:[{data:msgBuckets, backgroundColor:'#008300', borderRadius:4}]},
     options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:9}}}, y:{ticks:{font:{size:9}}}} } });
   upsertChart('engOpens', { type:'bar',
-    data:{ labels:['0','1','2','3','4+'], datasets:[{data:openBuckets, backgroundColor:'#7F77DD', borderRadius:4}]},
+    data:{ labels:['0','1','2','3','4+'], datasets:[{data:openBuckets, backgroundColor:'#4A3AA7', borderRadius:4}]},
     options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:9}}}, y:{ticks:{font:{size:9}}}} } });
   upsertChart('engLatency', { type:'bar',
-    data:{ labels:['0-10m','10-60m','1-4h','4-24h','1-3d','3d+'], datasets:[{data:latBuckets, backgroundColor:'#D85A30', borderRadius:4}]},
+    data:{ labels:['0-10m','10-60m','1-4h','4-24h','1-3d','3d+'], datasets:[{data:latBuckets, backgroundColor:'#EB6834', borderRadius:4}]},
     options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:8}}}, y:{ticks:{font:{size:9}}}} } });
   upsertChart('engFunnel', { type:'bar',
     data:{ labels:['Signed up','Opened app','Sent 1st msg','Viewed plans','Purchased'],
-      datasets:[{ data:[signedUp,opened,messaged,viewedPlans,purchased], backgroundColor:'#378ADD', borderRadius:4 }]},
+      datasets:[{ data:[signedUp,opened,messaged,viewedPlans,purchased], backgroundColor:'#2A78D6', borderRadius:4 }]},
     options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:9}}}, y:{ticks:{font:{size:9}}}} } });
 }
 
@@ -606,8 +646,8 @@ function renderRetention(mask){
   const nonpayerPct = days.map(d => nonpayerTotal.n ? +(100*nonpayerCounts[d]/nonpayerTotal.n).toFixed(1) : 0);
   upsertChart('retChart', { type:'line',
     data:{ labels:days, datasets:[
-      { label:'Payers', data:payerPct, borderColor:'#639922', backgroundColor:'#639922', pointRadius:0, tension:0.2 },
-      { label:'Non-payers', data:nonpayerPct, borderColor:'#B4B2A9', backgroundColor:'#B4B2A9', pointRadius:0, tension:0.2 }
+      { label:'Payers', data:payerPct, borderColor:'#008300', backgroundColor:'#008300', pointRadius:0, tension:0.2 },
+      { label:'Non-payers', data:nonpayerPct, borderColor:'#9C99AC', backgroundColor:'#9C99AC', pointRadius:0, tension:0.2 }
     ]},
     options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
       scales:{ y:{ beginAtZero:true, max:100, ticks:{font:{size:9}, callback:v=>v+'%'}, title:{display:true,text:'% still active',font:{size:10}} },
@@ -624,7 +664,7 @@ function renderSupport(tickets){
   });
   const catLabels = Object.keys(cats);
   upsertChart('supCat', { type:'bar',
-    data:{ labels:catLabels, datasets:[{ data:catLabels.map(c=>cats[c]), backgroundColor:'#7F77DD', borderRadius:4 }]},
+    data:{ labels:catLabels, datasets:[{ data:catLabels.map(c=>cats[c]), backgroundColor:'#4A3AA7', borderRadius:4 }]},
     options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:9}}}, y:{ticks:{font:{size:9}}}} } });
 
   document.getElementById('supCsat').textContent = csatN ? (csatSum/csatN).toFixed(2) : '–';
@@ -638,7 +678,7 @@ function renderSupport(tickets){
   const tbody = document.querySelector('#supFailTable tbody');
   const rows = Object.entries(failReasons).sort((a,b)=>b[1]-a[1]);
   tbody.innerHTML = rows.length ? rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')
-    : '<tr><td colspan="2" style="color:#9A998F;">No failed-payment tickets in this filter</td></tr>';
+    : '<tr><td colspan="2" style="color:var(--ink-3);">No failed-payment tickets in this filter</td></tr>';
 }
 
 function renderAll(){
@@ -673,7 +713,7 @@ function renderPayerEconomics(mask){
   }
   upsertChart('payerSplit', { type:'bar',
     data:{ labels:['Subscription payers','Any-revenue payers','Credit-pack-only'],
-      datasets:[{ data:[subPayers,anyPayers,packOnly], backgroundColor:['#1D9E75','#378ADD','#D85A30'], borderRadius:4 }]},
+      datasets:[{ data:[subPayers,anyPayers,packOnly], backgroundColor:['#1BAF7A','#2A78D6','#EB6834'], borderRadius:4 }]},
     options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
       plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:9}}}, y:{ticks:{font:{size:9}}}} } });
 
@@ -688,7 +728,7 @@ function renderPayerEconomics(mask){
   }
   upsertChart('ltvDecile', { type:'bar',
     data:{ labels:['D1','D2','D3','D4','D5','D6','D7','D8','D9','D10'],
-      datasets:[{ data:deciles, backgroundColor:'#7F77DD', borderRadius:4 }]},
+      datasets:[{ data:deciles, backgroundColor:'#4A3AA7', borderRadius:4 }]},
     options:{ responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:false}},
       scales:{x:{ticks:{font:{size:9}}}, y:{ticks:{font:{size:9}, callback:v=>v+'%'}}} } });
