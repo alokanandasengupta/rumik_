@@ -1,4 +1,9 @@
-const API_BASE = 'http://localhost:8000';
+// env-config.js (loaded before this file, see index.html) sets
+// window.REACT_APP_BACKEND_URL from the environment when one is provided.
+// With none set, same-origin /api is the right default, that's what this
+// environment's ingress routes to the backend.
+const BACKEND_URL = window.REACT_APP_BACKEND_URL || window.location.origin;
+const API_BASE = `${BACKEND_URL}/api`;
 
 const form = document.getElementById('score-form');
 const submitBtn = document.getElementById('submit-btn');

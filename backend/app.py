@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -25,6 +25,10 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+# Everything lives under /api, this environment's ingress routes only that
+# path prefix to this service and sends everything else to the frontend.
+api = APIRouter(prefix='/api')
 
 scorer: Optional[IraPreFirstMessageScorer] = None
 scorer_error: Optional[str] = None
@@ -62,7 +66,7 @@ def _missing_model_files():
     return [f for f in REQUIRED_MODEL_FILES if not os.path.isfile(os.path.join(MODEL_DIR, f))]
 
 
-@app.get('/health')
+@api.get('/health')
 def health():
     missing = _missing_model_files()
     return {
@@ -72,7 +76,7 @@ def health():
     }
 
 
-@app.get('/options')
+@api.get('/options')
 def options():
     if scorer is None:
         raise HTTPException(503, 'Models not loaded yet, see /health')
@@ -82,7 +86,7 @@ def options():
     }
 
 
-@app.post('/score')
+@api.post('/score')
 def score(req: ScoreRequest):
     if scorer is None:
         raise HTTPException(503, f'Models not loaded: {scorer_error}. See /health.')
@@ -133,3 +137,6 @@ def score(req: ScoreRequest):
     }
 
     return scorer.score(user)
+
+
+app.include_router(api)

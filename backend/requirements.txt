@@ -5,3 +5,5 @@ numpy
 lightgbm
 joblib
 lifelines
+scikit-learn
+openpyxl
