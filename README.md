@@ -1,5 +1,16 @@
-# rumik_
-rumik_
+# Rumik Payer Scoring Tool
+
+A FastAPI + vanilla-JS app that turns a trained churn/payer-prediction model
+into something a growth or product team can actually use: enter a user's
+signup details, get back payer probability, predicted 30-day spend, and a
+day 1/7/14/30 retention curve. Includes a self-contained analytics dashboard
+built on a 15K-user synthetic dataset for exploring the underlying model
+without needing live data.
+
+**Stack**: FastAPI (Python) backend, static HTML/JS frontend (no build
+step), Chart.js for visualization. Models (LightGBM for payer
+probability/spend, `lifelines` for the retention survival curve) trained
+from a Jupyter notebook.
 
 ## App
 
