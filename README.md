@@ -53,3 +53,16 @@ cd frontend && REACT_APP_BACKEND_URL=http://localhost:8001 ./start.sh
 ```
 
 Open `http://localhost:3000`.
+
+## Testing
+
+```bash
+cd backend && pip install -r requirements.txt pytest httpx httpx2
+python -m pytest tests/ -v
+```
+
+17 tests: unit tests for the signal-weighting logic in `scorer.py`, and
+integration tests that run the real committed model artifacts end to end
+(checking the survival curve is monotonically non-increasing, probabilities
+are valid, etc.) plus API-level tests against the FastAPI endpoints. Runs
+in CI on every push.
